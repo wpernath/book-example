@@ -21,15 +21,15 @@ spec:
         deployment: person-service
     spec:
       containers:
-      - image: image-registry.openshift-image-registry.svc:5000/book-dev/person-service@sha256:64632109de557ae217035c1da1c0eaae3cf36f068ee3921b651380f4e12541ad
-        imagePullPolicy: IfNotPresent
-        name: person-service
-        ports:
-        - containerPort: 8080
-          protocol: TCP
-        resources: {}
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
+        - image: image-registry.openshift-image-registry.svc:5000/book-dev/person-service:latest
+          imagePullPolicy: IfNotPresent
+          name: person-service
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
