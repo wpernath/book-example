@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: person-service
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - image: image-registry.openshift-image-registry.svc:5000/book-dev/person-service:latest
+        imagePullPolicy: Always
+        name: person-service
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        env:
+          - name: APP_GREETING
+            value: 'Hey, this is the STAGING environment of the App'
+  

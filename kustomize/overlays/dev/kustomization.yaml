@@ -1,0 +1,15 @@
+namePrefix: dev-  
+
+commonLabels:
+  variant: development
+
+commonAnnotations:
+  # note: We are on dev now
+  stage: development
+
+bases:
+- ../../base
+
+patchesStrategicMerge:
+  - deployment.yaml
+  - route.yaml
