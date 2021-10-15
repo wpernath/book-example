@@ -4,7 +4,7 @@ commonLabels:
   variant: staging
 
 commonAnnotations:
-  # note: We are on dev now
+  note: We are on staging now
   stage: staging
 
 bases:
