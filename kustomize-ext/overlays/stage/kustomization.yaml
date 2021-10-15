@@ -1,0 +1,41 @@
+namePrefix: stage-  
+commonLabels:
+  variant: stage
+
+bases:
+- ../../base
+
+# in stage we have 2 replicas
+replicas:
+- name: person-service
+  count: 2
+
+# replace the image tag of the container with stage
+images:
+  - name: image-registry.openshift-image-registry.svc:5000/book-dev/person-service:latest
+    newTag: latest
+
+# generate a configmap 
+configMapGenerator:
+  - name: app-config
+    literals:
+      - APP_GREETING=We are in STAGING mode
+
+# apply some patches
+patches:
+  # apply health checks to deployment
+  - path: apply-health-checks.yaml
+    target:
+      version: v1
+      kind: Deployment
+      name: person-service
+
+# this patch needs to be done, because kustomize does not change 
+# the route target service name
+  - patch: |-
+      - op: replace
+        path: /spec/to/name
+        value: stage-person-service
+    target:
+      kind: Route
+
