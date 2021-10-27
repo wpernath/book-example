@@ -13,7 +13,8 @@ replicas:
 # replace the image tag of the container with stage
 images:
   - name: image-registry.openshift-image-registry.svc:5000/book-dev/person-service:latest
-    newTag: latest
+    newName: quay.io/wpernath/person-service
+    newTag: v1.0.0-test
 
 # generate a configmap 
 configMapGenerator:
