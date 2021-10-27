@@ -1,0 +1,9 @@
+deployment:
+    image: quay.io/wpernath/person-service
+    version: v1.0.0-test
+    replicas: 2
+    includeHealthChecks: false
+
+config:
+    greeting: 'We are on a newer version now!'
+

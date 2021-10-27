@@ -1,0 +1,15 @@
+apiVersion: charts.wanja.org/v1alpha1
+kind: PersonService
+metadata:
+  name: personservice-sample
+spec:
+  # Default values copied from <project_dir>/helm-charts/person-service/values.yaml
+  config:
+    greeting: Operator to developer, what's going on out there?
+  deployment:
+    image: quay.io/wpernath/person-service
+    includeHealthChecks: false
+    replicas: 2
+    version: v1.0.0-test
+  
+  

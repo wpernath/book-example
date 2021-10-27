@@ -1,0 +1,6 @@
+# Use the 'create api' subcommand to add watches to this file.
+- group: charts.wanja.org
+  version: v1alpha1
+  kind: PersonService
+  chart: helm-charts/person-service
+#+kubebuilder:scaffold:watch

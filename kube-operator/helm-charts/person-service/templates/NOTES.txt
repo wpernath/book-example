@@ -1,0 +1,28 @@
+# Release NOTES.txt of person-service helm chart
+- Chart name: {{ .Chart.Name }}
+- Chart description: {{ .Chart.Description }}
+- Chart version: {{ .Chart.Version }}
+- App version: {{ .Chart.AppVersion }}
+
+## Build and install this helm chart
+```bash
+$ helm package helm-chart -u
+$ helm install person-service <chart-name.tgz>
+$ helm upgrade person-service <chart-name.tgz>
+```
+
+## To learn more about this relase
+```bash
+$ helm list
+$ helm history person-service
+```
+
+## Version history
+- 0.0.1 Initial release
+- 0.0.2 release with some fixed bugs
+- 0.0.3 release with image coming from quay.io and better parameter substitution
+- 0.0.4 added NOTES.txt and a configmap
+- 0.0.5 added a batch Job for post-install and post-upgrade 
+- 0.0.6 Helm as part of an operator. Removed post-upgrade job
+
+

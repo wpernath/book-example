@@ -1,0 +1,12 @@
+apiVersion: v2
+appVersion: v1.0.0-test
+description: A helm chart for the basic person-service used as example in the book
+home: https://github.com/wpernath/book-example
+maintainers:
+- email: wpernath@redhat.com
+  name: Wanja Pernath
+name: person-service
+sources:
+- https://github.com/wpernath/book-example
+type: application
+version: 0.0.5
