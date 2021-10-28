@@ -1,0 +1,43 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: person-service-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions: {}
+  description: This is a helm based operator for the PersonService
+  displayName: PersonService
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - person-service
+  - helm
+  - operator
+  links:
+  - name: Person Service Operator
+    url: https://person-service-operator.domain
+  maintainers:
+  - email: wanja@redhat.com
+    name: wanja
+  maturity: alpha
+  provider:
+    name: Wanja Pernath
+  version: 0.0.0
