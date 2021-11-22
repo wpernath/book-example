@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: bash
+  labels:
+    app.kubernetes.io/version: "0.4"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build-tool
+spec:
+  description: >-
+    This task can be used to execute kustomze build scripts and to apply the changes via oc apply -f
+  workspaces:
+    - name: source
+      description: The workspace holding the cloned and compiled quarkus source.
+  params:
+    - name: script
+      description: Where should kustomize look for kustomization in source?
+  steps:
+    - name: script
+      image: quay.io/wpernath/kustomize-ubi:latest
+      workingDir: $(workspaces.source.path)
+      script: |
+        echo
+        ls -al /tekton/creds
+
+        echo 
+        ls -al ~/.docker/config.json
+        cat ~/.docker/config.json
+
+        echo
+        #ls -al ~/.ssh
+        #ls -al ~/.gitconfig
+        #cat ~/.gitconfig
+
+        $(params.script)        
+        ls -al ~/.ssh

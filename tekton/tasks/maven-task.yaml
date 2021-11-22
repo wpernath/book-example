@@ -1,0 +1,47 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: maven-caching
+  labels:
+    app.kubernetes.io/version: "0.4"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build-tool
+spec:
+  description: >-
+    This Task can be used to run a Maven build. The only difference to 
+    the original one from github.com/tektoncd/catalog is that it uses an 
+    optional local maven repo path to cache all the dependencies. And it requires a
+    a maven-settings workspace. 
+  workspaces:
+    - name: source
+      description: The workspace consisting of maven project.
+      optional: false
+    - name: maven-settings
+      description: >-
+        The workspace consisting of the custom maven settings
+        provided by the user.
+      optional: false
+  params:
+    - name: GOALS
+      description: maven goals to run
+      type: array
+      default:
+        - "package"
+    - name: CONTEXT_DIR
+      type: string
+      description: >-
+        The context directory within the repository for sources on
+        which we want to execute maven goals.
+      default: "."
+  steps:
+    - name: mvn-goals
+      image: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641
+      workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
+      command: ["/usr/bin/mvn"]
+      args:
+        - -B
+        - -s
+        - $(workspaces.maven-settings.path)/settings.xml
+        - -Dmaven.repo.local=$(workspaces.source.path)/MAVEN_MIRROR
+        - "$(params.GOALS)"

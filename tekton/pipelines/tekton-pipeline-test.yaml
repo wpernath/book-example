@@ -1,0 +1,88 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: new-test-pipeline
+spec:
+  params:
+    - default: 'https://github.com/wpernath/quarkus-simple.git'
+      description: Source to the GIT
+      name: git-url
+      type: string
+    - default: main
+      description: revision to be used
+      name: git-revision
+      type: string
+    - name: image-name
+      type: string
+      description: the name of the target image including registry
+      default: quay.io/wpernath/quarkus-simple-wow:latest
+    - name: image-username
+      type: string
+      description: the username you use to access the registry
+    - name: image-password
+      type: string
+      description: The password you use to access the registry
+    - name: target-namespace
+      description: The name of the namespace to apply the result to
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: revision
+          value: $(params.git-revision)
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+    - name: package
+      params:
+        - name: GOALS
+          value:
+            - package
+            - '-DskipTests'
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+      runAfter:
+        - git-clone
+      taskRef:        
+        kind: Task
+        name: maven-caching
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: maven-repo
+          workspace: maven-repo
+        - name: maven-settings
+          workspace: maven-settings
+    - name: apply-kustomize
+      params: 
+        - name: kustomize-dir
+          value: kustomize_ext/overlays/dev
+        - name: target-namespace
+          value: $(params.target-namespace)
+        - name: image-name
+          value: $(params.image-name)
+      taskRef:        
+        kind: Task
+        name: kustomize
+      runAfter:
+        - package
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+  workspaces:
+    - name: shared-workspace
+      optional: false
+    - name: maven-settings
+      optional: false
+    - name: maven-repo
+      optional: false
