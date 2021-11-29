@@ -40,7 +40,7 @@ spec:
         echo "Calculated DIGEST: $DIGEST"
         echo
 
-        kustomize edit set image quay.io/wpernath/simple-quarkus:latest=$(params.image-name)@$DIGEST
+        kustomize edit set image quay.io/wpernath/person-service:latest=$(params.image-name)@$DIGEST
         
         kustomize build .
         kustomize build . > ./kustomized.yaml

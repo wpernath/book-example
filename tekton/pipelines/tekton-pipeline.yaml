@@ -53,6 +53,8 @@ spec:
           value:
             - package
             - '-DskipTests'
+            - '-Dquarkus.container-image.push=false'
+            - '-Dquarkus.container-image.build=false'
         - name: CONTEXT_DIR
           value: "$(params.context-dir)/person-service"
       runAfter:
