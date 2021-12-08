@@ -1,0 +1,155 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: dev-pipeline
+spec:
+  params:
+    - default: 'https://github.com/wpernath/book-example.git'
+      description: URL of the Git Repo for the source
+      name: git-url
+      type: string
+    - default: main
+      description: revision to be used
+      name: git-revision
+      type: string
+    - default: person-service
+      description: context dir within git repo where the source code is
+      name: git-context
+      type: string
+    - default: 'https://github.com/wpernath/person-service-config.git'
+      description: URL of the config repository
+      name: config-git-url
+      type: string
+    - default: main
+      description: revision of the config repo to use
+      name: config-git-revision
+      type: string
+    - default: config/overlays/dev
+      description: real config within config git to use
+      name: kustomize-dir
+      type: string
+    - default: 'quay.io/wpernath/person-service:latest'
+      description: Image to produce
+      name: image-name
+      type: string
+    - default: wpernath
+      description: 'username for image repo '
+      name: repo-username
+      type: string
+    - description: password for image repo
+      name: repo-password
+      type: string
+  tasks:
+    - name: clone-source
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.git-revision)
+        - name: submodules
+          value: 'true'
+        - name: subdirectory
+          value: the-source
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'false'
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source
+    - name: package
+      params:
+        - name: GOALS
+          value:
+            - package
+            - '-DskipTests'
+        - name: CONTEXT_DIR
+          value: the-source/$(params.git-context)
+      runAfter:
+        - clone-source
+        - clone-config
+      taskRef:
+        kind: Task
+        name: maven-caching
+      workspaces:
+        - name: source
+          workspace: source
+        - name: maven-settings
+          workspace: maven-settings
+    - name: build-image
+      params:
+        - name: GOALS
+          value:
+            - package
+            - '-DskipTests'
+            - '-Dquarkus.container-image.build=true'
+            - '-Dquarkus.container-image.push=true'
+            - '-Dquarkus.container-image.username=$(params.repo-username)'
+            - '-Dquarkus.container-image.password=$(params.repo-password)'
+            - '-Dquarkus.container-image.image=$(params.image-name)'
+        - name: CONTEXT_DIR
+          value: the-source/$(params.git-context)
+      runAfter:
+        - package
+      taskRef:
+        kind: Task
+        name: maven-caching
+      workspaces:
+        - name: source
+          workspace: source
+        - name: maven-settings
+          workspace: maven-settings
+    - name: clone-config
+      params:
+        - name: url
+          value: $(params.config-git-url)
+        - name: revision
+          value: $(params.config-git-revision)
+        - name: subdirectory
+          value: the-config
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'false'
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source
+    - name: extract-digest-from-build
+      params:
+        - name: image-digest-path
+          value: the-source/$(params.git-context)/target
+      runAfter:
+        - build-image
+      taskRef:
+        kind: Task
+        name: extract-quarkus-digest
+      workspaces:
+        - name: source
+          workspace: source
+    - name: git-update-config
+      params:
+        - name: CURRENT_IMAGE
+          value: "$(params.image-name)"
+        - name: NEW_IMAGE
+          value: $(params.image-name)
+        - name: NEW_DIGEST
+          value: $(tasks.extract-digest-from-build.results.DIGEST)
+        - name: KUSTOMIZATION_PATH
+          value: $(params.kustomize-dir)
+      runAfter:
+        - extract-digest-from-build
+      taskRef:
+        kind: Task
+        name: git-update-deployment
+      workspaces:
+        - name: workspace
+          workspace: source
+  workspaces:
+    - name: source
+    - name: maven-settings

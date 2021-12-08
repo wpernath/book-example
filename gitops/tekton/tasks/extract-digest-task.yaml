@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: extract-quarkus-digest
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build-tool
+
+spec:
+  params:
+    - name: image-digest-path
+      default: target
+  results:
+    - name: DIGEST
+      description: The image digest of the last quarkus maven build with JIB image creation
+
+  workspaces:
+    - name: source
+      description: The workspace holding the cloned and compiled quarkus source.
+
+  description: >-
+    This task can be used to extract the image digest of a quarkus maven build. Whenever you're using JIB to create the app image, 
+    quarkus will produce a target/jib-image.digest file. The content of this file will be put into DIGEST result
+  steps:
+    - name: extract-digest
+      image: quay.io/wpernath/kustomize-ubi:latest
+      script: |
+        DIGEST=$(cat $(workspaces.source.path)/$(params.image-digest-path)/jib-image.digest)
+        echo " DIGEST: $DIGEST"
+        echo
+        echo -n $DIGEST > $(results.DIGEST.path)
+        
+    

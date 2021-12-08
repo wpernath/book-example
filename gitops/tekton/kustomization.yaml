@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: book-ci
+
+resources:
+# infra resources
+- infra/ns.yaml
+- infra/roles.yaml
+- infra/sa.yaml
+- infra/maven-artifact-cache-pvc.yaml
+- infra/maven-settings-cm.yaml
+
+# tasks
+- tasks/create-release.yaml
+- tasks/extract-digest-from-kustomize-task.yaml
+- tasks/extract-digest-task.yaml
+- tasks/git-update-deployment.yaml
+- tasks/maven-task.yaml
+
+# pipelines
+- pipelines/dev-pipeline.yaml
+- pipelines/stage-release.yaml
+
+# please note, you still have to call pipeline.sh init to generate the secrets!
+

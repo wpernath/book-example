@@ -1,0 +1,124 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: stage-pipeline
+spec:
+  params:
+    - name: git-url
+      type: string
+      description: the url of the config repo to clone
+      default: 'https://github.com/wpernath/person-service-config.git'
+    - name: git-revision
+      type: string
+      description: the revision of the config repo to clone
+      default: main
+    - name: target-image
+      type: string
+      description: The target image name of the config (without tag/digest)
+      default: quay.io/wpernath/person-service
+
+    - name: kustomize-dev
+      type: string
+      description: Kustomize target dev
+      default: config/overlays/dev
+    - name: kustomize-stage
+      type: string
+      description: kustomize target stage
+      default: config/overlays/stage
+    - name: release-name
+      type: string
+      description: Release name will be used as image tag in quay.io and feature branch in Git
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: revision
+          value: $(params.git-revision)
+        - name: subdirectory
+          value: the-config
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace   
+    - name: git-branch
+      params:
+        - name: BASE_IMAGE
+          value: >-
+            docker.io/alpine/git:v2.26.2@sha256:23618034b0be9205d9cc0846eb711b12ba4c9b468efdd8a59aac1d7b1a23363f
+        - name: GIT_SCRIPT
+          value: cd the-config && git checkout -b release-$(params.release-name)
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: ClusterTask
+        name: git-cli
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: input
+          workspace: shared-workspace
+    - name: extract-digest
+      params:
+        - name: kustomize-dir
+          value: the-config/$(params.kustomize-dev)
+      runAfter:
+        - git-branch
+      taskRef:
+        kind: Task
+        name: extract-kustomize-digest
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+
+    - name: tag-image
+      params:
+        - name: srcImageURL
+          value: >-
+            docker://$(params.target-image)@$(tasks.extract-digest.results.DIGEST)
+        - name: destImageURL
+          value: >-
+            docker://$(params.target-image):$(params.release-name)
+        - name: srcTLSverify
+          value: 'false'
+        - name: destTLSverify
+          value: 'false'
+      runAfter:
+        - extract-digest
+      taskRef:
+        kind: ClusterTask
+        name: skopeo-copy
+      workspaces:
+        - name: images-url
+          workspace: shared-workspace
+
+    - name: update-release
+      params:
+        - name: kustomize-dir
+          value: $(params.kustomize-stage)
+        - name: release-name
+          value: "$(params.release-name)"
+        - name: old-image
+          value: "$(params.target-image):latest"
+        - name: new-image
+          value: "$(params.target-image)"
+        - name: digest
+          value: "$(tasks.extract-digest.results.DIGEST)"
+      runAfter:
+        - tag-image
+      taskRef:
+        kind: Task
+        name: create-release
+      workspaces:
+        - name: workspace
+          workspace: shared-workspace
+
+  workspaces:
+    - name: shared-workspace
+      optional: false

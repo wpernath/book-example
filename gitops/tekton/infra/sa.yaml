@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pipeline-bot
+secrets:
+- name: git-user-pass
+- name: quay-push-secret
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: piplinebot-rolebinding1
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pipelines-scc-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: pipeline-bot
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: piplinebot-rolebinding2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+  - kind: ServiceAccount
+    name: pipeline-bot

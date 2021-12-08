@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: extract-kustomize-digest
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build-tool
+
+spec:
+  params:
+    - name: kustomize-dir
+      description: Where to extract the DIGEST from.       
+
+  results:
+    - name: DIGEST
+      description: The image digest of the last quarkus maven build with JIB image creation
+
+  workspaces:
+    - name: source
+      description: The workspace holding the cloned and compiled quarkus source.
+
+  description: >-
+    This task can be used to extract any Image DIGEST from a Kustomization.yaml file. 
+
+  steps:
+    - name: extract-digest
+      image: quay.io/wpernath/kustomize-ubi:latest
+      script: |
+        # yq eval '.images[0].digest' $(workspaces.source.path)/$(params.kustomize-dir)/kustomization.yaml
+        
+        DIGEST=$(yq eval '.images[0].digest' $(workspaces.source.path)/$(params.kustomize-dir)/kustomization.yaml)
+        echo " DIGEST: $DIGEST"
+        echo
+        echo -n $DIGEST > $(results.DIGEST.path)
+        
+    
