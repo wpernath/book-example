@@ -10,6 +10,12 @@ resources:
 - infra/maven-artifact-cache-pvc.yaml
 - infra/maven-settings-cm.yaml
 
+# This is an old nexus server which will be installed in book-ci to cache artifacts
+# NOTE, you need to change tekton/infra/maven-settings-cm.yaml if you don't want to use
+#       THIS nexus instance!
+- infra/nexus.yaml
+
+
 # tasks
 - tasks/create-release.yaml
 - tasks/extract-digest-from-kustomize-task.yaml

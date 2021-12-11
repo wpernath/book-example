@@ -11,11 +11,12 @@ GIT_USER=""
 GIT_PASSWORD=""
 
 PIPELINE=dev-pipeline
-CONTEXT_DIR=the-source
+CONTEXT_DIR=person-service
 IMAGE_NAME=quay.io/wpernath/person-service
 IMAGE_USER=wpernath
 IMAGE_PASSWORD=
 TARGET_NAMESPACE=book-dev
+FORCE_SETUP="false"
 
 valid_command() {
   local fn=$1; shift
@@ -39,7 +40,7 @@ command.help() {
       pipeline.sh [command] [options]
   
   Examples:
-      pipeline.sh init --git-user <user> --git-password <pwd> --registry-user <user> --registry-password
+      pipeline.sh init [--force] --git-user <user> --git-password <pwd> --registry-user <user> --registry-password
       pipeline.sh build -u wpernath -p <nope> 
       pipeline.sh stage -r v1.2.5 -g <config-git-rep> -i <target-image>
       pipeline.sh logs
@@ -61,7 +62,8 @@ command.help() {
       -t, --target-namespace        Which target namespace to start the app ($TARGET_NAMESPACE)
       -g, --git-repo                Which quarkus repository to clone ($GIT_URL)
       -r, --git-revision            Which git revision to use ($GIT_REVISION)
-
+      -f, --force                   By default, this script assumes, you've created demo-setup/setup.yaml
+                                    if you haven't, use this flag to force the setup of the summit-cicd NS
 EOF
 }
 
@@ -70,6 +72,10 @@ while (( "$#" )); do
     build|stage|logs|init)
       COMMAND=$1
       shift
+      ;;
+    -f|--force)
+      FORCE_SETUP="true"
+      shift 1
       ;;
     -c|--context-dir)
       CONTEXT_DIR=$2
@@ -129,10 +135,32 @@ command.init() {
   # This script imports the necessary files into the current project 
   pwd
 
+echo "Using parameters:"
+echo "   GIT_USER    : $GIT_USER"
+echo "   GIT_PASSWORD: $GIT_PASSWORD"
+echo "   REG_USER    : $IMAGE_USER"
+echo "   REG_PASSWORD: $IMAGE_PASSWORD"
+echo "   FORCE_SETUP : $FORCE_SETUP "
+
   # prepare secrets for SA
-  if [ $GIT_USER = "" ]; then
+  if [ -z $GIT_USER ]; then 
     command.help
-    err "You have to provide GIT credentials via --git-user and --git-password"
+    err "You have to provide credentials via --git-user"
+  fi
+
+  if [ -z $GIT_PASSWORD ]; then 
+    command.help
+    err "You have to provide credentials via --git-password"
+  fi
+
+  if [ -z $IMAGE_USER ]; then 
+    command.help
+    err "You have to provide credentials via --registry-user"
+  fi
+
+  if [ -z $IMAGE_PASSWORD ]; then 
+    command.help
+    err "You have to provide credentials via --registry-password"
   fi
 
   cat > /tmp/secret.yaml <<-EOF
@@ -159,10 +187,18 @@ stringData:
   password: $IMAGE_PASSWORD
 EOF
 
-  oc apply -f /tmp/secret.yaml
+  # apply all tekton related setup
+  if [[ "$FORCE_SETUP" == "true" ]]; then
+    info "Creating demo setup by calling $SCRIPT_DIR/kustomization.yaml"
+    oc apply -k "$SCRIPT_DIR"
 
-  # apply all tekton related
-  oc apply -k .
+    while :; do
+      oc get ns/book-ci > /dev/null && break
+      sleep 2
+    done
+  fi
+
+  oc apply -f /tmp/secret.yaml -n book-ci
 }
 
 

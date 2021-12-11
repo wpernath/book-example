@@ -36,22 +36,15 @@ spec:
         cd $(params.KUSTOMIZATION_PATH)
         kustomize edit set image $(params.CURRENT_IMAGE)=$(params.NEW_IMAGE)@$(params.NEW_DIGEST)
 
-        echo "##########################"
-        echo "### kustomization.yaml ###"
-        echo "##########################"
         cat kustomization.yaml
-
+        
     - name: git-commit
       image: docker.io/alpine/git:v2.26.2
       workingDir: $(workspaces.workspace.path)/the-config
       script: |
-        ls -al
-        echo 
-        echo
         git config user.email "wpernath@redhat.com"
         git config user.name "My Tekton Bot"
 
-        git status
         git add $(params.KUSTOMIZATION_PATH)/kustomization.yaml
         git commit -am "[ci] Image digest updated"
         
