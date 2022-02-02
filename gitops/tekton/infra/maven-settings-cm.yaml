@@ -15,7 +15,7 @@ data:
       <mirrors>
         <mirror>
           <id>all</id>
-          <url>http://nexus.ci.svc:8081/repository/maven-public</url>
+          <url>http://nexus.book-ci.svc:8081/repository/maven-public</url>
           <mirrorOf>*</mirrorOf>
         </mirror>
       </mirrors>
