@@ -15,7 +15,7 @@ CONTEXT_DIR=person-service
 IMAGE_NAME=quay.io/wpernath/person-service
 IMAGE_USER=wpernath
 IMAGE_PASSWORD=
-TARGET_NAMESPACE=book-dev
+TARGET_NAMESPACE=book-ci
 FORCE_SETUP="false"
 
 valid_command() {
@@ -41,15 +41,15 @@ command.help() {
   
   Examples:
       pipeline.sh init [--force] --git-user <user> --git-password <pwd> --registry-user <user> --registry-password
-      pipeline.sh build -u wpernath -p <nope> 
-      pipeline.sh stage -r v1.2.5 -g <config-git-rep> -i <target-image>
-      pipeline.sh logs
+      pipeline.sh build -u wpernath -p <nope> [-t <target-namespace>]
+      pipeline.sh stage -r v1.2.5 [-g <config-git-rep>] [-i <target-image>] [-t <target-namespace>]
+      pipeline.sh logs [-t <target-namespace]
   
   COMMANDS:
-      init                           creates ConfigMap, Tasks and Pipelines into current context
-      build                          starts the dev-pipeline
-      stage                          starts the stage-pipeline
-      logs                           shows logs of the last pipeline run
+      init                           creates ConfigMap, Secrets, Tasks and Pipelines into $TARGET_NAMESPACE
+      build                          starts the dev-pipeline in $TARGET_NAMESPACE
+      stage                          starts the stage-pipeline in $TARGET_NAMESPACE
+      logs                           shows logs of the last pipeline run in $TARGET_NAMESPACE
       help                           Help about this command
 
   OPTIONS:
@@ -190,7 +190,7 @@ EOF
   # apply all tekton related setup
   if [[ "$FORCE_SETUP" == "true" ]]; then
     info "Creating demo setup by calling $SCRIPT_DIR/kustomization.yaml"
-    oc apply -k "$SCRIPT_DIR"
+    oc apply -k "$SCRIPT_DIR" -n $TARGET_NAMESPACE
 
     while :; do
       oc get ns/book-ci > /dev/null && break
@@ -198,12 +198,12 @@ EOF
     done
   fi
 
-  oc apply -f /tmp/secret.yaml -n book-ci
+  oc apply -f /tmp/secret.yaml -n $TARGET_NAMESPACE
 }
 
 
 command.logs() {
-    tkn pr logs -f -L
+    tkn pr logs -f -L -n $TARGET_NAMESPACE
 }
 
 command.stage() {
@@ -225,7 +225,7 @@ spec:
   serviceAccountName: pipeline-bot
 EOF
 
-    oc apply -f /tmp/stage-pr.yaml
+    oc apply -f /tmp/stage-pr.yaml -n $TARGET_NAMESPACE
 }
 
 command.build() {
@@ -250,7 +250,7 @@ spec:
   serviceAccountName: pipeline-bot
 EOF
 
-    oc apply -f /tmp/pipelinerun.yaml
+    oc apply -f /tmp/pipelinerun.yaml -n $TARGET_NAMESPACE
 }
 
 main() {

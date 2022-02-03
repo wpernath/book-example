@@ -5,5 +5,5 @@ deployment:
     includeHealthChecks: false
 
 config:
-    greeting: 'We are on a newer version now!'
+    greeting: 'Hello Workshop attendees'
 
