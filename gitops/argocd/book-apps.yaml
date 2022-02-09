@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: book-dev
   namespace: openshift-gitops
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     namespace: book-dev
@@ -23,6 +25,8 @@ kind: Application
 metadata:
   name: book-stage
   namespace: openshift-gitops
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     namespace: book-stage
@@ -37,4 +41,3 @@ spec:
       prune: true
     syncOptions:
     - PruneLast=true
-

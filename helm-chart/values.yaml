@@ -5,5 +5,5 @@ deployment:
     includeHealthChecks: false
 
 config:
-    greeting: 'Hello Workshop attendees'
+    greeting: 'Hello Workshop attendees OpenShift Plus Week is great!'
 

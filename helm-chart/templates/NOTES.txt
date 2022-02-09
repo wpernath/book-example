@@ -4,6 +4,10 @@
 - Chart version: {{ .Chart.Version }}
 - App version: {{ .Chart.AppVersion }}
 
+## NOTES on ThIS VERSION
+Everything is incompatible with the old version! BE AWARE!!!!!
+
+
 ## Build and install this helm chart
 ```bash
 $ helm package helm-chart -u
