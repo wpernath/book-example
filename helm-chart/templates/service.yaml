@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     app: person-service
-  name: person-service
+  name: {{ .Release.Name }}-service
 spec:
   ports:
   - name: 8080-tcp
@@ -11,6 +11,6 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    deployment: person-service
+    deployment: {{ .Release.Name }}
   sessionAffinity: None
   type: ClusterIP

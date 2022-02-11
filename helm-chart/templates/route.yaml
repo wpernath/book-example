@@ -3,12 +3,12 @@ kind: Route
 metadata:
   labels:
     app: person-service
-  name: person-service
+  name: {{ .Release.Name }}-route
 spec:
   port:
     targetPort: 8080-tcp
   to:
     kind: Service
-    name: person-service
+    name: {{ .Release.Name }}-service
     weight: 100
   wildcardPolicy: None
