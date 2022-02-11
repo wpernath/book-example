@@ -1,7 +1,9 @@
 apiVersion: postgres-operator.crunchydata.com/v1beta1
 kind: PostgresCluster
 metadata:
-  name: wanja
+  name: {{ .Release.Name }}-db
+  labels:
+    app.kubernetes.io/part-of: {{ .Release.Name }}-chart
 spec:
   image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:centos8-13.5-0
   postgresVersion: 13

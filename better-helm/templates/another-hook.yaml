@@ -1,12 +1,12 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name | quote }}
+  name: {{ .Release.Name }}-job
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation
   labels:
-    app.kubernetes.io/part-of: person-service-chart
+    app.kubernetes.io/part-of: {{ .Release.Name }}-chart
 spec:
   template:
     metadata:
@@ -19,13 +19,17 @@ spec:
           env:
             - name: NAMESPACE
               value: {{ .Release.Namespace | default "better-helm" | quote }}
+            - name: NAME
+              value: {{ .Release.Name }}-service
           command: 
           - bin/bash
           - -c
           - |
-            SERVICE_URL=person-service.${NAMESPACE}.svc:8080/person
+            SERVICE_URL=${NAME}.${NAMESPACE}.svc:8080/person
             NUM_PERSONS=$(curl http://$SERVICE_URL/count)
 
+            echo "SERVICE_URL: http://${SERVICE_URL}"
+            echo 
             if [ $NUM_PERSONS -eq 0 ]; then
               echo "There are no persons in the database, filling some"
 

@@ -3,8 +3,8 @@ kind: Service
 metadata:
   labels:
     app: person-service
-    app.kubernetes.io/part-of: person-service-chart
-  name: person-service
+    app.kubernetes.io/part-of: {{ .Release.Name }}-chart
+  name: {{ .Release.Name }}-service
 spec:
   ports:
   - name: 8080-tcp
@@ -12,6 +12,6 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    deployment: person-service
+    deployment: {{ .Release.Name }}
   sessionAffinity: None
   type: ClusterIP
