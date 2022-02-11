@@ -1,0 +1,9 @@
+deployment:
+    image: quay.io/wpernath/person-service
+    version: v1.8.9-native
+    replicas: 1
+    includeHealthChecks: false
+
+config:
+    greeting: 'Hello from better-helm-chart'
+
