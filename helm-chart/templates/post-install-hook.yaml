@@ -14,6 +14,7 @@ metadata:
         "helm.sh/hook-weight": "-5"
         "helm.sh/hook-delete-policy": before-hook-creation
 spec:
+    ttlSecondsAfterFinished: 60
     template:
         metadata:
             name: {{ .Chart.Name }}
