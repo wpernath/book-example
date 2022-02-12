@@ -5,15 +5,16 @@ metadata:
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation #, hook-succeeded
   labels:
     app.kubernetes.io/part-of: {{ .Release.Name }}-chart
 spec:
-  ttlSecondsAfterFinished: 60
+  ttlSecondsAfterFinished: 600
   template:
     metadata:
       name: {{ .Chart.Name | quote }}
     spec:
+      serviceAccountName: {{ .Release.Name }}-sa
       restartPolicy: Never
       containers:
         - name: initialize-database
@@ -28,73 +29,23 @@ spec:
           - -c
           - |
             SERVICE_URL=${NAME}.${NAMESPACE}.svc:8080/person
-
-            # Point to the internal API server hostname
-            APISERVER=https://kubernetes.default.svc
-
-            # Path to ServiceAccount token
-            SERVICEACCOUNT=/var/run/secrets/kubernetes.io/serviceaccount
-
-            # Read this Pod's namespace
-            NAMESPACE=$(cat ${SERVICEACCOUNT}/namespace)
-
-            CURRENT_USER=admin
-
-            # Read the ServiceAccount bearer token
-            TOKEN=$(cat ${SERVICEACCOUNT}/token)
-
-            # Reference the internal certificate authority (CA)
-            CACERT=${SERVICEACCOUNT}/ca.crt
-
-            CURRENT_CONTEXT=$NAMESPACE/kubernetes-default-svc/$CURRENT_USER
-            echo "Token: $TOKEN"
-            echo "Namespace: $NAMESPACE"
-
-            # create a kubeconfig file
-            cat << EOF > ~/.kube/config
-            apiVersion: v1
-            kind: Config
-            current-context: $CURRENT_CONTEXT
-            contexts:
-            - name: $CURRENT_CONTEXT
-              context:
-                cluster: $CURRENT_CONTEXT
-                user: $CURRENT_USER
-                namespace: $NAMESPACE
-            clusters:
-            - name: $CURRENT_CONTEXT
-              cluster: 
-                insecure-skip-tls-verify: true
-                server: $APISERVER
-            users:
-            - name: $CURRENT_USER
-              user:
-                token: $TOKEN
-            EOF
-
-
-            kubectl config current-context
-
-            # wait until the main service is rolled out successfully
-            kubectl login -u admin -p admin123 https://kubernetes.default.svc
-            while [[ $(kubectl get pod -l deployment={{ .Release.Name }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
-              echo "  Waiting for all pods to be ready"
-              sleep 1
-            done;
-
-            NUM_PERSONS=$(curl http://$SERVICE_URL/count)
-
             echo "SERVICE_URL: http://${SERVICE_URL}"
-            echo 
+            echo "Waiting for the service to be successfully rolled out..."
+
+            # wait until the service has been successfully rolled out
+            kubectl wait --for=condition=Ready Pod -l deployment={{ .Release.Name }} 
+
+            NUM_PERSONS=$(curl -s http://$SERVICE_URL/count)
+
             if [ $NUM_PERSONS -eq 0 ]; then
               echo "There are no persons in the database, filling some"
 
-              http --ignore-stdin --json POST ${SERVICE_URL} firstName=Carlos lastName=Santana salutation=Mr
-              http --ignore-stdin --json POST ${SERVICE_URL} firstName=Joe lastName=Cocker salutation=Mr
-              http --ignore-stdin --json POST ${SERVICE_URL} firstName=Eric lastName=Clapton salutation=Mr
-              http --ignore-stdin --json POST ${SERVICE_URL} firstName=Kurt lastName=Cobain salutation=Mr
+              http -I --json POST ${SERVICE_URL} firstName=Carlos lastName=Santana salutation=Mr
+              http -I --json POST ${SERVICE_URL} firstName=Joe lastName=Cocker salutation=Mr
+              http -I --json POST ${SERVICE_URL} firstName=Eric lastName=Clapton salutation=Mr
+              http -I --json POST ${SERVICE_URL} firstName=Kurt lastName=Cobain salutation=Mr
 
             else
               echo "There are already $NUM_PERSONS persons in the database."
-              http --ignore-stdin ${SERVICE_URL} 
+              http -I --pretty format ${SERVICE_URL} 
             fi
