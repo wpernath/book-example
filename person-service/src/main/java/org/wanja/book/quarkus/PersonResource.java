@@ -1,7 +1,6 @@
 package org.wanja.book.quarkus;
 
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;

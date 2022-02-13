@@ -8,8 +8,9 @@
 
 ## Build and install this helm chart
 ```bash
-$ helm package helm-chart/ -u
+$ helm package better-helm/ -u
 $ helm install person-service <chart-name.tgz>
+$ helm install person-service2 <chart-name.tgz>
 $ helm upgrade person-service <chart-name.tgz>
 ```
 
