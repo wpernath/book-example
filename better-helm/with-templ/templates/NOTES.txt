@@ -1,0 +1,35 @@
+# Release NOTES.txt of person-service helm chart
+- Chart name: {{ .Chart.Name }}
+- Chart description: {{ .Chart.Description }}
+- Chart version: {{ .Chart.Version }}
+- App version: {{ .Chart.AppVersion }}
+- Release name: {{ .Release.Name }}
+- Release version: {{ .Release.Release }}
+
+## Build and install this helm chart
+```bash
+$ helm package better-helm/ -u
+$ helm install person-service <chart-name.tgz>
+$ helm install person-service2 <chart-name.tgz>
+$ helm upgrade person-service <chart-name.tgz>
+```
+
+## To learn more about this relase
+```bash
+$ helm list
+$ helm history person-service
+```
+
+## Version history
+- 0.0.1 Initial release
+- 0.0.2 release with some fixed bugs
+- 0.0.3 release with image coming from quay.io and better parameter substitution
+- 0.0.4 added NOTES.txt and a configmap
+- 0.0.5 added a batch Job for post-install and post-upgrade 
+- 0.0.6 added database from CrunchyData PostgreSQL Operator
+- 0.0.7 added a post-install job which is filling the DB by calling the service API
+- 0.0.8 Made sure you can install this chart multiple times by using the release name as metadata/name entries
+- 0.0.9 added kubectl wait --for to wait for the service to be successfully rolled out
+- 0.0.10 added required operator as subscription CRD in crds folder of the chart
+
+

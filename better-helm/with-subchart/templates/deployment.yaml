@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: person-service
+    app.kubernetes.io/part-of: {{ .Release.Name }}-chart
+  name: {{ .Release.Name }}-deployment
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.deployment.replicas | default 1 }}
+  selector:
+    matchLabels:
+      deployment: {{ .Release.Name }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        deployment: {{ .Release.Name }}
+    spec:
+      containers:
+        - image: "{{ .Values.deployment.image }}:{{ .Values.deployment.version }}"
+          imagePullPolicy: IfNotPresent
+          name: person-service
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+          env:
+            - name: DB_user
+              value: wanja
+            - name: DB_password
+              value: wanja
+            - name: DB_dbname
+              value: wanjadb
+            - name: DB_host
+              value: {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc
+          resources: 
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 5m
+              memory: 128Mi          
+          {{- if .Values.deployment.includeHealthChecks }}        
+          readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: 8080
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: 8080
+              scheme: HTTP
+            timeoutSeconds: 2
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          {{- end }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

@@ -1,4 +1,4 @@
-# GitOps with OpenShift from scratch 
+# Getting GitOps. 
 ## Tekton sample
 This example is about Tekton / OpenShift Pipelines and is being discussed in chapter 4 of the book. Please also have a look at the script `pipeline.sh`. It installs all the necessary Tasks and resources if you call it with the `init` parameter:
 

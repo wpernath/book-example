@@ -1,4 +1,4 @@
-# GitOps with OpenShift from scratch 
+# Getting GitOps. 
 ## GitOps sample
 
 This is the sample discussed in chapter 5. It's about using Tekton and ArgoCD. 

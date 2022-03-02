@@ -27,4 +27,5 @@ $ helm history person-service
 - 0.0.3 release with image coming from quay.io and better parameter substitution
 - 0.0.4 added NOTES.txt and a configmap
 - 0.0.5 added a batch Job for post-install and post-upgrade 
+- 0.0.8 changed everything and it's now shiny new.
 

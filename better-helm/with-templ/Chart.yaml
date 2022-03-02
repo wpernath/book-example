@@ -1,0 +1,12 @@
+apiVersion: v2
+name: person-service-templ
+description: A better helm chart for the basic person-service used as example in the book. The necessary postgresql database is being instanciated via Template.
+home: https://github.com/wpernath/book-example
+type: application
+version: 0.0.10 
+appVersion: "v1.8.9-native"
+sources:
+    - https://github.com/wpernath/book-example
+maintainers:
+    - name: Wanja Pernath
+      email: wpernath@redhat.com

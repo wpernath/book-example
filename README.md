@@ -1,4 +1,4 @@
-# Using the Examples discussed in the book *GitOps with OpenShift from scratch*
+# Using the Examples discussed in the book *Getting GitOps.*
 ## Prerequisites
 In order to run all of the examples I am discussing in this book, you should have the following software available
 

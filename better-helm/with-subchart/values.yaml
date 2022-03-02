@@ -1,0 +1,30 @@
+postgresql:
+    auth:
+        username: wanja
+        password: wanja
+        database: wanjadb
+
+    volumePermissions:
+        enabled: false
+        securityContext:
+            runAsUser: "auto"
+
+    securityContext:
+        enabled: false
+
+    containerSecurityContext:
+        enabled: false
+
+    shmVolume:
+        chmod:
+            enabled: false
+
+deployment:
+    image: quay.io/wpernath/person-service
+    version: v1.8.9-native
+    replicas: 1
+    includeHealthChecks: false
+
+config:
+    greeting: 'Hello from chart with subchart'
+

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: person-service-with-template
+description: A better helm chart for the basic person-service used as example in the book
+home: https://github.com/wpernath/book-example
+type: application
+version: 0.0.11
+appVersion: "v1.8.9-native"
+sources:
+    - https://github.com/wpernath/book-example
+dependencies:
+    - name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.1.3
+maintainers:
+    - name: Wanja Pernath
+      email: wpernath@redhat.com

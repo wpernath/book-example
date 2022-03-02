@@ -18,7 +18,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: initialize-database
-          image: "quay.io/wpernath/kustomize-ubi:v4.5.2"
+          image: "quay.io/wpernath/kustomize-ubi@sha256:7b2ce43d1b4a0f829ba750d4d44da4a85cfb6089ca0436678aff09862e8feb83"
           env:
             - name: NAMESPACE
               value: {{ .Release.Namespace | default "better-helm" | quote }}

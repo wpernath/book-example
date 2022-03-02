@@ -1,4 +1,4 @@
-# GitOps with OpenShift from scratch 
+# Getting GitOps. 
 ## The source code of the example service
 
 This folder contains the Java sources of the Quarkus example. If you want to deploy it on OpenShift, please make sure to first install a PostgreSQL server, either via Crunchy Data Operator or by instantiating the template `postgresql-persistent`. 

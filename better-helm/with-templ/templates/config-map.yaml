@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  labels:
+    app.kubernetes.io/part-of: {{ .Release.Name }}-chart
+data:
+  APP_GREETING: |- 
+    {{ .Values.config.greeting | default "Yeah, it's openshift time" }}
