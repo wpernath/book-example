@@ -32,15 +32,17 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config
           env:
+            - name: DB_host
+              value: {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc
+            - name: DB_dbname
+              value: wanjadb
             - name: DB_user
               value: wanja
             - name: DB_password
-              value: wanja
-            - name: DB_dbname
-              value: wanjadb
-            - name: DB_host
-              value: pg-{{ .Release.Name }}.{{ .Release.Namespace }}.svc
-
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: password
           resources: 
             limits:
               cpu: 500m

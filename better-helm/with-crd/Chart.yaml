@@ -1,5 +1,5 @@
 apiVersion: v2
-name: better-person-service
+name: person-service-crd
 description: A better helm chart for the basic person-service used as example in the book
 home: https://github.com/wpernath/book-example
 type: application

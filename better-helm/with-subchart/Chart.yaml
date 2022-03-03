@@ -1,6 +1,6 @@
 apiVersion: v2
-name: person-service-with-template
-description: A better helm chart for the basic person-service used as example in the book
+name: person-service-sub
+description: A better helm chart for the basic person-service used as example in the book. This release is using the Bitnami postgresql chart
 home: https://github.com/wpernath/book-example
 type: application
 version: 0.0.11
