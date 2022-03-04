@@ -35,11 +35,13 @@ spec:
             - name: DB_user
               value: wanja
             - name: DB_password
-              value: wanja
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: password
             - name: DB_dbname
               value: wanjadb
-            - name: DB_host
-            
+            - name: DB_host            
               value: {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc
           resources: 
             limits:
