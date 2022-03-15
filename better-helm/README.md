@@ -3,20 +3,20 @@ In chapter 3 of my book `Getting GitOps. A Practical Platform with OpenShift, Ar
 
 However, it really was a basic example which only focused on what’s necessary to create and deploy a Helm Chart. 
 
-This article is showing some more advanced techniques to create a chart which could be installed more than once in the same namespace. It also shows how you could easily install a dependent database.
+This article is showing some more advanced techniques to create a chart which could be installed more than once in the same namespace. It also shows how you could easily install a dependent database with your chart.
+
+The sources for this example can be found on [GitHub](https://github.com/wpernath/book-example/tree/main/better-helm).
 
 ## The use case
 During the development of our `person-service` (see chapter one in the book), we were realizing that we need to have a dependent database installed with our chart. As we have discussed in chapter one, we have three options here:
 1. We try to use the corresponding OpenShift Template to install the necessary PostgreSQL database 
-2. We use the [CrunchyData Postgres Operator](https://github.com/CrunchyData/postgres-operator/) for the database 
-3. We install a dependent Helm Chart with our chart. For example the [PostgreSQL chart by Bitnami](https://artifacthub.io/packages/helm/bitnami/postgresql) 
+2. We use the [CrunchyData Postgres Operator](https://github.com/CrunchyData/postgres-operator/) (or any other Operator defined PostgreSQL database extension) for the database 
+3. We install a dependent Helm chart with our chart. For example the [PostgreSQL chart by Bitnami](https://artifacthub.io/packages/helm/bitnami/postgresql) 
 
-Also, we want to make sure that our chart could be installed multiple times on each namespace. 
-
-The sources for this example can be found on [GitHub](https://github.com/wpernath/book-example/tree/main/better-helm).
+Also, we want to make sure that our chart could be installed multiple times on each namespace.
 
 ## Making the Chart installable multiple times in the same namespace
-The most important step to make sure your chart is installable multiple times in the same namespace is to use generated names for the manifest files. For this there is an object called `Release` with the following parameters:
+The most important step to make sure your chart is installable multiple times in the same namespace is to use generated names for all the manifest files. Therefore there is an object called `Release` with the following properties:
 - `Name`: The name of the release
 - `Namespace`: Where are you going to install the chart
 - `Revision`: Revision number of this release (1 on install and each update increments it by one)
@@ -211,7 +211,7 @@ Of course you now need to make sure, your `person-service` is able to connect to
 [...]
 ```
 
-This will map all values of the PostgresCluster secret to your deployment with a prefix of `DB_`, which are exactly those we need.
+This will map all values of the PostgresCluster secret to your deployment with a prefix of `DB_`, which are exactly those you need.
 
 Now your chart is ready to be packaged and can be installed in any namespace of OpenShift:
 
@@ -303,4 +303,7 @@ Now you need to package your chart. Note, that because you’re depending on a t
 $ helm package -u better-helm/with-subchart
 $ helm install ps1 person-service-sub.0.0.11.tgz
 ```
+
+## Summary
+Using Helm charts for your own projects is quite easy, even if you need to make sure certain dependencies are being installed as well. Thanks to the Helm dependency management, you’re able to easily use sub charts with your charts. And thanks to the flexibility of Helm, you’re also even able to either use a (processed) template or to quickly install a Kubernetes Operator before you’re proceeding. 
 

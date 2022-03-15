@@ -97,11 +97,11 @@ while (( "$#" )); do
       IMAGE_PASSWORD=$2
       shift 2
       ;;
-    --git-user)
+    -a|--git-user)
       GIT_USER=$2
       shift 2
       ;;
-    --git-password)
+    -b|--git-password)
       GIT_PASSWORD=$2
       shift 2
       ;;
