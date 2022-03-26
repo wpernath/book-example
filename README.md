@@ -6,7 +6,7 @@ In order to run all of the examples I am discussing in this book, you should hav
 - Maven 3.8.3
 - Java JDK 11 or better
 - git
-- Docker
+- Docker Desktop
 - OpenShift client (`oc`) matching the version of the OpenShift Cluster
 - An Editor to work with (VScode, Eclipse, IntelliJ)
 
