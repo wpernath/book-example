@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.wanja.demo</groupId>
   <artifactId>person-service</artifactId>
-  <version>1.0.1</version>
+  <version>1.8.11</version>
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
