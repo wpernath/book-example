@@ -31,5 +31,6 @@ $ helm history person-service
 - 0.0.8 Made sure you can install this chart multiple times by using the release name as metadata/name entries
 - 0.0.9 added kubectl wait --for to wait for the service to be successfully rolled out
 - 0.0.10 added required operator as subscription CRD in crds folder of the chart
+- 0.0.11 hello accenture
 
 

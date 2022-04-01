@@ -14,7 +14,7 @@ replicas:
 images:
   - name: image-registry.openshift-image-registry.svc:5000/book-dev/person-service:latest
     newName: quay.io/wpernath/person-service
-    newTag: v1.0.0-test
+    newTag: v1.0.1-test
 
 # generate a configmap 
 configMapGenerator:
