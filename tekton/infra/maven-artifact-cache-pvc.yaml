@@ -5,12 +5,11 @@ metadata:
 spec:
   resources:
     requests:
-      storage: 10Gi
+      storage: 5Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain 
+  persistentVolumeReclaimPolicy: Delete 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -19,9 +18,8 @@ metadata:
 spec:
   resources:
     requests:
-      storage: 10Gi
+      storage: 5Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
+  persistentVolumeReclaimPolicy: Delete
