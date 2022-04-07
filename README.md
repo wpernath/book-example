@@ -1,4 +1,9 @@
 # Using the Examples discussed in the book *Getting GitOps.*
+
+You can download the final eBook as PDF here:
+
+https://developers.redhat.com/e-books/getting-gitops-practical-platform-openshift-argo-cd-and-tekton
+
 ## Prerequisites
 In order to run all of the examples I am discussing in this book, you should have the following software available
 
