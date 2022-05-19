@@ -4,8 +4,7 @@ metadata:
   name: {{ .Release.Name }}-db
   labels:
     app.kubernetes.io/part-of: {{ .Release.Name }}-chart
-spec:
-  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:centos8-13.5-0
+spec: 
   postgresVersion: 13
   instances:
     - name: instance1
@@ -17,7 +16,6 @@ spec:
             storage: 1Gi
   backups:
     pgbackrest:
-      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:centos8-2.36-0
       repos:
       - name: repo1
         volume:

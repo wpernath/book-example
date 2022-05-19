@@ -33,7 +33,7 @@ spec:
             echo "Waiting for the service to be successfully rolled out..."
 
             # wait until the service has been successfully rolled out
-            kubectl wait --for=condition=Ready Pod -l deployment={{ .Release.Name }} 
+            #kubectl wait --for=condition=Ready Pod -l deployment={{ .Release.Name }} 
 
             NUM_PERSONS=$(curl -s http://$SERVICE_URL/count)
 
