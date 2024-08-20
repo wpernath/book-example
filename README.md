@@ -8,10 +8,11 @@ https://developers.redhat.com/e-books/getting-gitops-practical-platform-openshif
 In order to run all of the examples I am discussing in this book, you should have the following software available
 
 - OpenShift 4.8.x (see below for instructions)
+- Quarkus 2.16.x
 - Maven 3.8.3
 - Java JDK 11 or better
 - git
-- Docker Desktop
+- Docker Desktop or Podman Desktop
 - OpenShift client (`oc`) matching the version of the OpenShift Cluster
 - An Editor to work with (VScode, Eclipse, IntelliJ)
 
@@ -19,6 +20,9 @@ OpenShift needs to have the following Operators installed:
 - OpenShift GitOps
 - OpenShift Pipelines
 - Crunchy Postgres for Kubernetes by Crunchy Data
+
+## A quick Note on Quarkus Versions
+If you want to use latest Quarkus versions, please make sure to install the matching requirements for that version of Quarkus. Have a look at the following [guide](https://quarkus.io/guides/getting-started)
 
 ## Getting an OpenShift instance
 You have three possible options to get an OpenShift installation
